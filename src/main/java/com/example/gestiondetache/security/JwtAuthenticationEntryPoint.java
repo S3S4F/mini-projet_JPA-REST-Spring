@@ -1,6 +1,5 @@
 package com.example.gestiondetache.security;
 
-
 import com.example.gestiondetache.dto.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -16,10 +15,16 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private final ObjectMapper mapper;
+
+    public JwtAuthenticationEntryPoint(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
     @Override
     public void commence(HttpServletRequest request,
-                         HttpServletResponse response,
-                         AuthenticationException authException) throws IOException, ServletException {
+            HttpServletResponse response,
+            AuthenticationException authException) throws IOException, ServletException {
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -28,10 +33,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 HttpServletResponse.SC_UNAUTHORIZED,
                 "Unauthorized",
                 "Authentification requise pour accéder à cette ressource",
-                request.getServletPath()
-        );
+                request.getServletPath());
 
-        final ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), errorResponse);
     }
 }
