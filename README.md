@@ -19,6 +19,24 @@ L'application est configurée pour se connecter à une base de données MongoDB 
 
 Assurez-vous que votre instance MongoDB est en cours d'exécution sur le port 27017.
 
+## 🚀 Mode "Sans Installation" (Pour le Professeur / Test)
+
+Si vous n'avez pas MongoDB installé sur votre machine, vous pouvez lancer l'application avec une **base de données temporaire embarquée** (similaire à SQLite mais pour Mongo).
+
+**Note importante** : Dans ce mode, les données sont stockées en mémoire et seront perdues à l'arrêt de l'application.
+
+Pour lancer ce mode, utilisez le profil `demo` :
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
+```
+
+Ou si vous lancez le JAR :
+
+```bash
+java -jar -Dspring.profiles.active=demo target/gestiondetache-0.0.1-SNAPSHOT.jar
+```
+
 ## Installation et Exécution
 
 ### 1. Cloner le projet (si ce n'est pas déjà fait)

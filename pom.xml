@@ -89,6 +89,13 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+
+        <!-- Embedded MongoDB for testing/demo -->
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo.spring30x</artifactId>
+            <version>4.11.0</version>
+        </dependency>
     </dependencies>
 
     <build>

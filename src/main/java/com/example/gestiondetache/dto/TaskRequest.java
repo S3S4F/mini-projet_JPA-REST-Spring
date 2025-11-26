@@ -1,6 +1,5 @@
 package com.example.gestiondetache.dto;
 
-
 import com.example.gestiondetache.model.Priority;
 import com.example.gestiondetache.model.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;  // ✅ Changé
 
 @Data
 @NoArgsConstructor
@@ -26,5 +25,5 @@ public class TaskRequest {
 
     private Priority priority;
 
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;  // ✅ Changé de LocalDateTime à LocalDate
 }

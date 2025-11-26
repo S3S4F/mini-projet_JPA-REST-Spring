@@ -36,7 +36,7 @@ public class TaskResponse {
         this.priority = task.getPriority();
         this.createdAt = task.getCreatedAt();
         this.updatedAt = task.getUpdatedAt();
-        this.dueDate = task.getDueDate();
+        this.dueDate = task.getDueDate().atStartOfDay();
         this.userId = task.getUser().getId();
         this.username = task.getUser().getUsername();
     }

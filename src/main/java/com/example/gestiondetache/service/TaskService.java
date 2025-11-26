@@ -1,6 +1,5 @@
 package com.example.gestiondetache.service;
 
-
 import com.example.gestiondetache.dto.TaskRequest;
 import com.example.gestiondetache.dto.TaskResponse;
 import com.example.gestiondetache.model.Priority;
@@ -11,14 +10,17 @@ import com.example.gestiondetache.repository.TaskRepository;
 import com.example.gestiondetache.repository.UserRepository;
 import com.example.gestiondetache.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;  // ✅ Import ajouté
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -46,15 +48,24 @@ public class TaskService {
     public TaskResponse createTask(TaskRequest request) {
         User currentUser = getCurrentUser();
 
+        log.info("📝 Création d'une tâche pour l'utilisateur: {}", currentUser.getUsername());
+        log.info("📝 Données reçues: {}", request);
+
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO);
         task.setPriority(request.getPriority() != null ? request.getPriority() : Priority.MEDIUM);
-        task.setDueDate(request.getDueDate());
+        task.setDueDate(request.getDueDate());  // ✅ LocalDate maintenant
         task.setUser(currentUser);
 
+        // ✅ Initialiser les dates manuellement
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
+
         Task savedTask = taskRepository.save(task);
+        log.info("✅ Tâche créée avec succès: ID={}", savedTask.getId());
+
         return new TaskResponse(savedTask);
     }
 
@@ -64,7 +75,11 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasks() {
         User currentUser = getCurrentUser();
+        log.info("📋 Récupération des tâches pour l'utilisateur: {}", currentUser.getUsername());
+
         List<Task> tasks = taskRepository.findByUserIdOrderByCreatedAtDesc(currentUser.getId());
+        log.info("📋 Nombre de tâches trouvées: {}", tasks.size());
+
         return tasks.stream()
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
@@ -117,7 +132,7 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getOverdueTasks() {
         User currentUser = getCurrentUser();
-        List<Task> tasks = taskRepository.findOverdueTasks(currentUser.getId(), LocalDateTime.now());
+        List<Task> tasks = taskRepository.findOverdueTasks(currentUser.getId(), LocalDate.now());  // ✅ LocalDate.now()
         return tasks.stream()
                 .map(TaskResponse::new)
                 .collect(Collectors.toList());
@@ -146,7 +161,10 @@ public class TaskService {
         if (request.getPriority() != null) {
             task.setPriority(request.getPriority());
         }
-        task.setDueDate(request.getDueDate());
+        task.setDueDate(request.getDueDate());  // ✅ LocalDate
+
+        // ✅ Mettre à jour la date de modification
+        task.setUpdatedAt(LocalDateTime.now());
 
         Task updatedTask = taskRepository.save(task);
         return new TaskResponse(updatedTask);
@@ -167,6 +185,9 @@ public class TaskService {
         }
 
         task.setStatus(newStatus);
+        // ✅ Mettre à jour la date de modification
+        task.setUpdatedAt(LocalDateTime.now());
+
         Task updatedTask = taskRepository.save(task);
         return new TaskResponse(updatedTask);
     }

@@ -1,6 +1,5 @@
 package com.example.gestiondetache.config;
 
-
 import com.example.gestiondetache.security.CustomUserDetailsService;
 import com.example.gestiondetache.security.JwtAuthenticationEntryPoint;
 import com.example.gestiondetache.security.JwtAuthenticationFilter;
@@ -53,6 +52,9 @@ public class SecurityConfig {
                 // Désactiver CSRF (car on utilise JWT)
                 .csrf(csrf -> csrf.disable())
 
+                // Activer CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 // Gestion des erreurs d'authentification
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(unauthorizedHandler))
@@ -68,8 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
 
                         // Tous les autres endpoints nécessitent une authentification
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // Permettre l'affichage de H2 console dans un iframe
                 .headers(headers -> headers
@@ -79,5 +80,20 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+        configuration.setAllowedOrigins(java.util.Arrays.asList("http://localhost:3000", "http://localhost:4200"));
+        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(java.util.Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setExposedHeaders(java.util.Arrays.asList("Authorization"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
